@@ -17,12 +17,14 @@ Open the webpage you want to extract data from and:
 In the application:
 - Click **Copy HTML**
 - This will capture the page HTML for parsing
+<img width="827" height="128" alt="image" src="https://github.com/user-attachments/assets/a81b5d1c-21db-4c7f-87a4-f2ecd58db6f1" />
 
 ---
 
 ### 3. Paste HTML into Box
 - Open the HTML input window
 - Paste the copied HTML into the text box
+<img width="817" height="498" alt="image" src="https://github.com/user-attachments/assets/d03b835e-1242-4eeb-91a8-f3efafc3621b" />
 
 ---
 
@@ -44,6 +46,7 @@ When you are done adding all pages:
 - Review parsed results in the DataGrid
 - Click **Save**
 - This will generate a `.csv` file on your Desktop with a timestamp
+<img width="817" height="496" alt="image" src="https://github.com/user-attachments/assets/9666edcd-848a-4f79-ba58-a0a2210bb012" />
 
 ---
 
