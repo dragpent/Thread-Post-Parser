@@ -36,6 +36,15 @@ namespace Thread_Post_Parser
         {
             var results = new List<PostData>();
 
+            if (htmlPages.Count == 0 && !string.IsNullOrWhiteSpace(htmlTextBox.Text))
+            {
+                htmlPages.Add(htmlTextBox.Text);
+                htmlTextBox.Clear();
+
+                lbCount.Text = htmlPages.Count.ToString() + " html pages added.";
+                lbCount.Visible = true;
+            }
+
             foreach (var html in htmlPages)
             {
                 var doc = new HtmlAgilityPack.HtmlDocument();
