@@ -36,7 +36,7 @@ namespace Thread_Post_Parser
         {
             var results = new List<PostData>();
 
-            if (htmlPages.Count == 0 && !string.IsNullOrWhiteSpace(htmlTextBox.Text))
+            if (!string.IsNullOrWhiteSpace(htmlTextBox.Text))
             {
                 htmlPages.Add(htmlTextBox.Text);
                 htmlTextBox.Clear();
