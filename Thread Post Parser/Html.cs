@@ -111,8 +111,7 @@ namespace Thread_Post_Parser
                     }
 
                     if (!string.IsNullOrWhiteSpace(name) &&
-                        !string.IsNullOrWhiteSpace(date) &&
-                        !string.IsNullOrWhiteSpace(content))
+                        !string.IsNullOrWhiteSpace(date))
                     {
                         results.Add(new PostData
                         {
