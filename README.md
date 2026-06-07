@@ -4,7 +4,6 @@ This tool extracts and processes forum/thread HTML into structured post data (Da
 
 ---
 
----
 ## 📥 How to Download the Latest Release
 
 To download and run the application without building from source:
