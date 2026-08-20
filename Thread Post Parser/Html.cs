@@ -20,6 +20,14 @@ namespace Thread_Post_Parser
             InitializeComponent();
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            // The designed size is the floor; anchored controls grow with anything larger.
+            MinimumSize = Size;
+        }
+
         private void btnSaveAndAdd_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(htmlTextBox.Text))

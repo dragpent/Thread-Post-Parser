@@ -36,6 +36,7 @@
             // 
             // htmlTextBox
             // 
+            htmlTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             htmlTextBox.Location = new Point(12, 12);
             htmlTextBox.Name = "htmlTextBox";
             htmlTextBox.Size = new Size(776, 385);
@@ -44,6 +45,7 @@
             // 
             // btnSaveAndClose
             // 
+            btnSaveAndClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnSaveAndClose.Location = new Point(670, 409);
             btnSaveAndClose.Name = "btnSaveAndClose";
             btnSaveAndClose.Size = new Size(118, 29);
@@ -54,6 +56,7 @@
             // 
             // btnSaveAndAdd
             // 
+            btnSaveAndAdd.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnSaveAndAdd.Location = new Point(547, 409);
             btnSaveAndAdd.Name = "btnSaveAndAdd";
             btnSaveAndAdd.Size = new Size(117, 29);
@@ -64,6 +67,7 @@
             // 
             // lbCount
             // 
+            lbCount.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             lbCount.AutoSize = true;
             lbCount.Location = new Point(12, 413);
             lbCount.Name = "lbCount";

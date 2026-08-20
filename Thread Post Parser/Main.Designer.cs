@@ -37,6 +37,7 @@
             // 
             // btnCopyHtml
             // 
+            btnCopyHtml.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnCopyHtml.Location = new Point(694, 12);
             btnCopyHtml.Name = "btnCopyHtml";
             btnCopyHtml.Size = new Size(94, 29);
@@ -47,6 +48,7 @@
             // 
             // btnSave
             // 
+            btnSave.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnSave.Location = new Point(694, 409);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(94, 29);
@@ -57,6 +59,7 @@
             // 
             // dgData
             // 
+            dgData.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgData.Location = new Point(12, 12);
             dgData.Name = "dgData";
