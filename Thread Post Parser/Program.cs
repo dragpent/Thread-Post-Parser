@@ -16,8 +16,8 @@ namespace Thread_Post_Parser
     }
     public class PostData
     {
-        public string Date { get; set; }
-        public string Name { get; set; }
-        public string Post { get; set; }
+        public string Date { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Post { get; set; } = "";
     }
 }
