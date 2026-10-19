@@ -212,7 +212,6 @@ namespace Thread_Post_Parser
         {
             btnFetch.Enabled = !busy;
             btnSignIn.Enabled = !busy;
-            btnCopyHtml.Enabled = !busy;
             btnSave.Enabled = !busy;
             btnStop.Enabled = busy;
             UseWaitCursor = busy;
@@ -232,21 +231,6 @@ namespace Thread_Post_Parser
                 "and only ever sent to forums.d2jsp.org. It will expire eventually; paste a fresh one, or use " +
                 "\"Open browser / sign in\" instead.",
                 "Getting the cookie", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void btnCopyHtml_Click(object sender, EventArgs e)
-        {
-            using (var form = new Html())
-            {
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    var data = form.ParsedPosts;
-                    dgData.DataSource = data;
-
-                    int users = UserListWriter.Tally(data).Count;
-                    lbStatus.Text = $"Pasted HTML: {data.Count} posts, {users} unique users.";
-                }
-            }
         }
 
         private void btnSave_Click(object sender, EventArgs e)

@@ -38,7 +38,6 @@
             chkRemember = new CheckBox();
             lbCookieHelp = new LinkLabel();
             btnSignIn = new Button();
-            btnCopyHtml = new Button();
             btnSave = new Button();
             dgData = new DataGridView();
             lbStatus = new Label();
@@ -132,24 +131,13 @@
             // btnSignIn
             //
             btnSignIn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSignIn.Location = new Point(458, 72);
+            btnSignIn.Location = new Point(616, 72);
             btnSignIn.Name = "btnSignIn";
             btnSignIn.Size = new Size(172, 29);
             btnSignIn.TabIndex = 8;
             btnSignIn.Text = "Open browser / sign in";
             btnSignIn.UseVisualStyleBackColor = true;
             btnSignIn.Click += btnSignIn_Click;
-            //
-            // btnCopyHtml
-            //
-            btnCopyHtml.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnCopyHtml.Location = new Point(636, 72);
-            btnCopyHtml.Name = "btnCopyHtml";
-            btnCopyHtml.Size = new Size(152, 29);
-            btnCopyHtml.TabIndex = 9;
-            btnCopyHtml.Text = "Paste HTML instead";
-            btnCopyHtml.UseVisualStyleBackColor = true;
-            btnCopyHtml.Click += btnCopyHtml_Click;
             //
             // dgData
             //
@@ -190,7 +178,6 @@
             Controls.Add(btnSave);
             Controls.Add(lbStatus);
             Controls.Add(dgData);
-            Controls.Add(btnCopyHtml);
             Controls.Add(btnSignIn);
             Controls.Add(lbCookieHelp);
             Controls.Add(chkRemember);
@@ -219,7 +206,6 @@
         private CheckBox chkRemember;
         private LinkLabel lbCookieHelp;
         private Button btnSignIn;
-        private Button btnCopyHtml;
         private Button btnSave;
         private DataGridView dgData;
         private Label lbStatus;
