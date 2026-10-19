@@ -4,6 +4,9 @@ namespace Thread_Post_Parser
     {
         public string Name { get; set; } = "";
         public int Count { get; set; }
+
+        /// <summary>1-based position in the thread of this user's first post.</summary>
+        public int FirstPostNumber { get; set; }
     }
 
     /// <summary>Turns the parsed posts into the two deliverables: every unique poster, and the repeat posters.</summary>
@@ -12,12 +15,21 @@ namespace Thread_Post_Parser
         /// <summary>
         /// Groups posters case-insensitively (d2jsp names are unique regardless of case)
         /// and keeps the spelling of the first post seen.
+        ///
+        /// Ordered by where each user first appears in the thread, not alphabetically, so the list
+        /// can be checked off against the thread by reading both top to bottom.
         /// </summary>
         public static List<UserTally> Tally(IEnumerable<PostData> posts) =>
             posts.Where(p => !string.IsNullOrWhiteSpace(p.Name))
-                 .GroupBy(p => p.Name.Trim(), StringComparer.OrdinalIgnoreCase)
-                 .Select(g => new UserTally { Name = g.First().Name.Trim(), Count = g.Count() })
-                 .OrderBy(u => u.Name, StringComparer.OrdinalIgnoreCase)
+                 .Select((post, index) => new { post, number = index + 1 })
+                 .GroupBy(x => x.post.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                 .Select(g => new UserTally
+                 {
+                     Name = g.First().post.Name.Trim(),
+                     Count = g.Count(),
+                     FirstPostNumber = g.First().number
+                 })
+                 .OrderBy(u => u.FirstPostNumber)
                  .ToList();
 
         /// <summary>
