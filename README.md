@@ -1,125 +1,113 @@
-# 🧾 Thread Post Parser - Usage Guide
+# Thread Post Parser
 
-This tool extracts and processes forum/thread HTML into structured post data (Date, Name, Post) and exports it to CSV.
+A small Windows desktop app that walks a [d2jsp](https://forums.d2jsp.org) forum topic from start to
+finish, collects every post, and writes out who posted — deduplicated, in thread order.
 
----
+Point it at a topic URL, hit **Fetch All**, and it pages through the whole thread on its own.
 
-## 📥 How to Download the Latest Release
+## What it produces
 
-To download and run the application without building from source:
+**Save user lists** writes two timestamped files to your Desktop:
 
-### 1. Go to Releases
-Navigate to the GitHub repository and click:
-- **Releases** (right-hand side or top navigation)
+| File | Contents |
+| --- | --- |
+| `topic_<id>_<stamp>_unique-users.txt` | One name per line, deduplicated |
+| `topic_<id>_<stamp>_multi-posters.txt` | `name<TAB>count` for anyone who posted more than once |
 
----
+`unique-users.txt` is ordered by **where each person first appears in the thread**, not alphabetically,
+so you can read the file and the thread top-to-bottom together and check names off as you go.
+`multi-posters.txt` is ordered by post count, highest first, since its job is spotting repeat posters.
 
-### 2. Download the Latest Version
-- Find the latest release (highest version number or most recent date)
-- Download the `.zip` file attached under **Assets**
+Names are matched case-insensitively (d2jsp names are unique regardless of case) and the spelling from
+the user's first post is the one kept.
 
----
+## Why it embeds a browser
 
-### 3. Unzip the File
-- Right-click the downloaded `.zip`
-- Select **Extract All...**
-- Open the extracted folder
+forums.d2jsp.org sits behind Cloudflare, which fingerprints the **TLS handshake** rather than just
+inspecting headers. Every HTTP stack on Windows is built on Schannel, so `HttpClient`, `WebClient` and
+even Windows' own bundled `curl.exe` all get a `403` "Just a moment..." challenge page back — no
+combination of user-agent, headers or cookies changes that.
 
----
+So the app fetches through an embedded **WebView2** (real Chromium) instead. Page one is a genuine
+navigation; the remaining pages are pulled with an in-page `fetch()` on the same origin, which reuses
+the browser's cookies and TLS without re-rendering images and scripts for every page.
 
-### 4. Run the Application
-- Double-click the `.exe` file to launch the program
+The browser window stays hidden during normal runs. It is only shown when a human actually has to do
+something — clear a Cloudflare interstitial, or log in.
 
----
+## Getting access
 
-## ⚠️ Windows Security Warning
+Members-only sections (anything that answers *"You do not have permission to view this topic"* when
+logged out) need a signed-in session. Two ways:
 
-When running the application for the first time, Windows may display a warning such as:
+1. **Open browser / sign in** — log into d2jsp once in the window that appears. The app keeps its own
+   persistent Chromium profile, so the session survives restarts. This is the durable option.
+2. **Paste a cookie** — in Chrome: `F12` → Network → reload → click the `topic.php` request →
+   Request Headers → right-click `Cookie` → Copy value → paste into the Cookie box. Expires eventually
+   and has to be re-pasted.
 
-> "Windows protected your PC"
+Cloudflare's own `cf_clearance` and `__cf_bm` cookies are not worth copying: they are bound to Chrome's
+TLS fingerprint and your IP, and the embedded browser clears Cloudflare without them.
 
-This happens because the application is not signed with a trusted certificate.
+With **Remember** ticked, the cookie is stored in
+`%LOCALAPPDATA%\ThreadPostParser\settings.json`, encrypted with DPAPI under your Windows account —
+never in plain text. The browser profile lives in `%LOCALAPPDATA%\ThreadPostParser\WebView2`.
 
-To proceed:
-1. Click **More info**
-2. Click **Run anyway**
+## How pagination works
 
----
+d2jsp pages a topic with an `&o=<offset>` parameter:
 
-## 🛠️ Notes
+```
+topic.php?t=110498378&f=104          first page
+topic.php?t=110498378&f=104&o=25     second page
+topic.php?t=110498378&f=104&o=250    past the end — HTTP 200, full page shell, zero posts
+```
 
-- Always download the latest release for new features and bug fixes
-- Do not move the `.exe` out of the extracted folder (it needs the included files to run properly unless published as single-file)
+Running off the end returns a normal `200` page with no post blocks in it, so **"stop when a page
+yields zero posts"** is the termination rule.
 
----
+The page size is **not** a fixed 25. It is a per-account preference — logged out, the same thread pages
+by 10. The app reads the real step off the pager links (`div.pg`) on page one instead of assuming, and
+falls back to probing if a thread has no pager at all. The reply count in the page header is used for
+the progress readout.
 
-## 🚀 How to Use
+Requests are spaced 600 ms apart, with a hard ceiling of 400 pages so a parsing surprise can't loop
+forever. Posts are deduplicated on `date + name + body`, so overlapping pages can't inflate counts.
 
-### 1. View Page Source
-Open the webpage you want to extract data from and:
-- Right-click → **View Page Source**
-- Or press `Ctrl + U`
+## Building
 
----
+Requires the [.NET 8 SDK](https://dotnet.microsoft.com/download) and the
+[WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (already present on most
+Windows 10/11 installs — Edge ships it).
 
-### 2. Click "Copy HTML" Button
-In the application:
-- Click **Copy HTML**
-- This will capture the page HTML for parsing
-<img width="827" height="128" alt="image" src="https://github.com/user-attachments/assets/a81b5d1c-21db-4c7f-87a4-f2ecd58db6f1" />
+```
+dotnet build
+dotnet run
+```
 
----
+Dependencies: `HtmlAgilityPack`, `Microsoft.Web.WebView2`, `System.Security.Cryptography.ProtectedData`.
 
-### 3. Paste HTML into Box
-- Open the HTML input window
-- Paste the copied HTML into the text box
-<img width="817" height="498" alt="image" src="https://github.com/user-attachments/assets/d03b835e-1242-4eeb-91a8-f3efafc3621b" />
+## Layout
 
----
+| File | Role |
+| --- | --- |
+| `Main.cs` / `Main.Designer.cs` | The window: URL, cookie, fetch, grid, save |
+| `BrowserPageSource.cs` | WebView2 fetch engine, cookie seeding, sign-in window |
+| `ThreadFetcher.cs` | Pagination loop and the stop condition |
+| `PostParser.cs` | Topic-page HTML → posts; pager, reply count, URL parsing |
+| `UserListWriter.cs` | Tallying and the two output files |
+| `Settings.cs` | DPAPI-encrypted cookie, last URL |
 
-### 4. Save and Add (Multiple Pages)
-If you have more than one page to process:
-- Click **Save and Add**
-- This will store the current page’s HTML and allow you to add more pages
+`ThreadFetcher` talks to an `IPageSource` interface rather than to WebView2 directly, so the pagination
+logic can be driven from saved HTML in a test harness without a browser.
 
----
+## Troubleshooting
 
-### 5. Save and Close (Finish Input)
-When you are done adding all pages:
-- Click **Save and Close**
-- This will process all stored HTML pages into structured data
+**"Access denied — still not logged in."** The session isn't valid for that forum. Use
+*Open browser / sign in*, or paste a fresh cookie.
 
----
+**A Cloudflare check appears.** The browser window opens on its own; complete the check, wait for the
+topic, then click OK. It is normally a one-off per profile.
 
-### 6. Review Output and Export CSV
-- Review parsed results in the DataGrid
-- Click **Save**
-- This will generate a `.csv` file on your Desktop with a timestamp
-<img width="817" height="496" alt="image" src="https://github.com/user-attachments/assets/9666edcd-848a-4f79-ba58-a0a2210bb012" />
-
----
-
-## 📁 Output Format
-
-The exported CSV will include:
-Date, Name, Post
-
-
-Each row represents a single parsed forum post.
-
----
-
-## 🖥️ File Location
-
-All exported files are saved to:
-Desktop/output_yyyy-MM-dd_HH-mm-ss.csv
-
----
-
-## ⚠️ Notes
-
-- Ensure full page HTML is copied for best results
-- Multiple pages are merged automatically
-- Duplicate posts are removed during processing
-- Long posts with quotes are preserved and cleaned automatically
-
+**Fewer posts than expected.** Check the status line for the detected page step. If a thread uses an
+unusual pager layout, the step detection is the first place to look.
